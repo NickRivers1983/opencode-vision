@@ -1,41 +1,37 @@
 """
 opencode-vision: Model-agnostic image analysis via MCP for OpenCode.
 
-An MCP (Model Context Protocol) server that acts as a "guide dog" for
-text-only AI models. When a model like big-pickle or DeepSeek can't process
-image inputs, this server handles image analysis via Google Gemini Vision API
-and local tesseract OCR, returning text descriptions that any model can
-understand.
+An MCP (Model Context Protocol) server that gives vision capabilities to
+text-only AI models. Uses PaddleOCR (deep learning, SOTA accuracy) as the
+primary OCR engine with Google Gemini Vision API as fallback for handwritten
+or degraded text — returning plain text that any model can consume.
 
 Architecture:
     Text-only model → calls MCP tool → opencode-vision-server →
-    Google Gemini API + tesseract OCR → text description
+    PaddleOCR (primary) + Gemini (fallback) → text description
 
-Usage (OpenCode MCP):
-    Add to opencode.json:
-    ```json
-    {
-      "mcp": {
-        "vision": {
-          "type": "local",
-          "command": ["python3", "-m", "opencode_vision.server"],
-          "enabled": true,
-          "timeout": 30000
-        }
-      }
-    }
-    ```
+Modules:
+    server.py    MCP server — JSON-RPC stdio transport, tool routing
+    mcp.py       MCP protocol framing and message helpers
+    ocr.py       OCR engine — PaddleOCR + Gemini fallback
+    gemini.py    Google Gemini Vision API client
+    image.py     Image processing — resize, encode, metadata
+
+Quick start:
+    pip install opencode-vision
+    # Set GOOGLE_API_KEY in ~/.config/opencode/.env
+    # Add to opencode.json MCP config → see README
 
 Requirements:
     - Python >= 3.10
-    - google-genai SDK or direct REST access to Gemini API
-    - A Google Gemini API key (get one free at https://aistudio.google.com/)
-    - Optional: tesseract-ocr for local text extraction
+    - Google Gemini API key (free at https://aistudio.google.com/)
+    - Optional: paddleocr for local OCR (pip install paddleocr)
+    - Optional: Pillow for image resizing (pip install pillow)
 
 License: MIT
 """
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"
 __author__ = "Nicolás Ríos Herrera"
 __email__ = "nrios@icesi.edu.co"
 __license__ = "MIT"

@@ -3,20 +3,24 @@
 Entry point for `python -m opencode_vision` and `opencode-vision` CLI.
 
 When called without arguments, starts the MCP server (stdio transport).
-When called with `describe|ocr|analyze <image_path>`, runs the tool directly.
+When called with `describe|ocr|analyze <image_path>`, runs the tool directly
+using the same OCR engine pipeline (PaddleOCR + Gemini fallback).
 
 Examples:
     # Start MCP server (for OpenCode integration)
     opencode-vision
 
-    # CLI mode - describe an image
+    # CLI mode — describe an image
     opencode-vision describe ~/screenshot.png
     opencode-vision analyze ~/photo.jpg
     opencode-vision ocr ~/document.png
+
+    # CLI with custom prompt
+    opencode-vision describe ~/chart.png "What values does this chart show?"
 """
 
-import sys
 import json
+import sys
 from pathlib import Path
 
 # Add parent to path for direct execution
@@ -25,7 +29,7 @@ if str(_parent) not in sys.path:
     sys.path.insert(0, str(_parent.parent))
 
 from opencode_vision.server import main as mcp_main
-from opencode_vision.server import tool_describe, tool_ocr, tool_analyze
+from opencode_vision import ocr
 
 
 def main():
@@ -33,15 +37,17 @@ def main():
     if len(sys.argv) >= 3 and sys.argv[1] in ("describe", "ocr", "analyze"):
         command = sys.argv[1]
         image_path = sys.argv[2]
-        prompt = sys.argv[3] if len(sys.argv) > 3 and command == "describe" else None
 
-        tool_map = {
-            "describe": lambda: tool_describe(image_path, prompt),
-            "ocr": lambda: tool_ocr(image_path),
-            "analyze": lambda: tool_analyze(image_path),
-        }
+        if command == "describe":
+            prompt = sys.argv[3] if len(sys.argv) > 3 else None
+            result = ocr.describe_image(image_path, prompt)
+        elif command == "ocr":
+            result = ocr.extract_text(image_path)
+        elif command == "analyze":
+            result = ocr.full_analysis(image_path)
+        else:
+            result = {"error": f"Unknown command: {command}"}
 
-        result = tool_map[command]()
         if "error" in result:
             print(f"ERROR: {result['error']}", file=sys.stderr)
             sys.exit(1)

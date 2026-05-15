@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta:__legacy__"
 
 [project]
 name = "opencode-vision"
-description = "Model-agnostic image analysis via MCP for OpenCode text-only models. Vision proxy server using Google Gemini + tesseract."
+description = "Vision-empowered MCP server for OpenCode text-only models. PaddleOCR (SOTA deep learning) + Google Gemini fallback for model-agnostic image analysis."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
@@ -12,7 +12,7 @@ authors = [
     { name = "Nicolás Ríos Herrera", email = "nrios@icesi.edu.co" },
 ]
 keywords = [
-    "opencode", "mcp", "vision", "image-analysis", "gemini", "tesseract",
+    "opencode", "mcp", "vision", "image-analysis", "gemini", "paddleocr",
     "ocr", "multimodal", "model-context-protocol", "ai",
 ]
 classifiers = [
@@ -27,7 +27,6 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering :: Image Recognition",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
@@ -40,8 +39,9 @@ Documentation = "https://github.com/NickRivers1983/opencode-vision#readme"
 Issues = "https://github.com/NickRivers1983/opencode-vision/issues"
 
 [project.optional-dependencies]
+paddle = ["paddleocr>=2.8"]
 pillow = ["pillow>=10"]
-tesseract = []  # system dependency: brew install tesseract / apt install tesseract-ocr
+all = ["paddleocr>=2.8", "pillow>=10"]
 
 [project.scripts]
 opencode-vision = "opencode_vision.__main__:main"
