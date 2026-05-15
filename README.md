@@ -1,5 +1,9 @@
 # opencode-vision 👁️
 
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/opencode-vision?color=blue&label=downloads)](https://pypi.org/project/opencode-vision)
+[![PyPI - Version](https://img.shields.io/pypi/v/opencode-vision)](https://pypi.org/project/opencode-vision)
+[![GitHub](https://img.shields.io/github/license/NickRivers1983/opencode-vision)](https://github.com/NickRivers1983/opencode-vision)
+
 **Model-agnostic image analysis via MCP for OpenCode.**
 
 Give vision capabilities to **any** text-only model — big-pickle, DeepSeek, MiMo,
